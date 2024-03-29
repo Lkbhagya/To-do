@@ -1,14 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import { } from 'react-router-dom';
 import Card from '@mui/material/Card';
-import {Button, CardContent, Typography}  from '@mui/material';
+import {
+    Button, 
+    CardContent, 
+    Typography
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteRounded';
 import Chip from '@mui/material/Chip';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import dayjs from 'dayjs';
 import Edit from './Edit'
 import AddTask from './Addtask';
 
@@ -23,6 +25,9 @@ const Tasklist = () => {
     }, []);
 
 
+
+
+
     const fetchTasks = async () => {
         try{
             const result = await axios.get('http://127.0.0.1:5000/tasklist');
@@ -32,6 +37,9 @@ const Tasklist = () => {
             console.log('Something Wrong!', err);
         }
     };
+
+
+
 
     const handleDeleteClick = async (id) => {
         console.log(id);
@@ -44,8 +52,6 @@ const Tasklist = () => {
 
         setTasks(newTasks);
     };
-
-
 
 
 
@@ -72,6 +78,8 @@ const Tasklist = () => {
         setAddTaskOpen(false);
     };
 
+
+   
 
   return (
     <div className='tasklist-container'>
@@ -103,7 +111,7 @@ const TaskCard = ({ task, handleDeleteClick, handleEditClick}) => {
 
     const formatDueDate = (dateString) => {
         const date = new Date(dateString);
-        const options = {day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'};
+        const options = {day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/colombo'};
         return new Intl.DateTimeFormat('en-US', options).format(date);
     };
 

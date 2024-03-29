@@ -1,19 +1,28 @@
 import React, { useState, useEffect} from 'react';
 import axios from 'axios';
-import { Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions, Box } from '@mui/material';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  TextField, 
+  Button, 
+  DialogActions, 
+  Box 
+} from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import Chip from '@mui/material/Chip';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+
 
 dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault('Asia/Colombo');
+dayjs.extend(timezone); 
+
 
 
 const Edit = ({open, handleClose, taskId}) => {
@@ -25,6 +34,7 @@ const Edit = ({open, handleClose, taskId}) => {
     completed : false
   });
 
+
   useEffect(() => {
     if (taskId) {
       fetchTaskDetails(taskId);
@@ -35,7 +45,8 @@ const Edit = ({open, handleClose, taskId}) => {
   const fetchTaskDetails = async (id) => {
     try{
       const result = await axios.get( `http://localhost:5000/taskdetails/${id}`);
-      const duedate = result.data.due_date ? dayjs(result.data.due_date) : null;
+      const duedate = result.data.due_date ? dayjs(result.data.due_date).tz('Asia/Colombo').format('YYYY-MM-DDTHH:mm:ss') : null;
+      // console.log("Due Date:", duedate);
       setTask({...result.data, due_date: duedate});
     }catch (err) {
       console.error('Error fetching Task Details:', err);
@@ -49,11 +60,16 @@ const Edit = ({open, handleClose, taskId}) => {
   };
 
   const handleDateChange = (date) => {
-    const date = dayjs.tz('2024-03-28T12:10');
     setTask ({...task, due_date: date});
+    const localDatetime = dayjs(date).tz('Asia/Colombo').format('YYYY-MM-DDTHH:mm:ss');
+    setTask({...task, due_date: localDatetime});
+
+    
   };
 
   
+  
+
 
 
   const toggleCompletion = () => {
@@ -79,23 +95,39 @@ const Edit = ({open, handleClose, taskId}) => {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Edit Task</DialogTitle>
       <DialogContent>
-        
-
-        <TextField autoFocus margin="dense" label="Title" type="text" fullWidth  name="title" value={task.title} onChange={handleInputChange} />
-        <TextField  margin="dense" label="Description" type="text" fullWidth name="description" value={task.description} onChange={handleInputChange} />
+          <TextField 
+            autoFocus 
+            margin="dense" 
+            label="Title" 
+            type="text" 
+            fullWidth  
+            name="title" 
+            value={task.title} 
+            onChange={handleInputChange} 
+          />
+          <TextField  
+            margin="dense" 
+            label="Description" 
+            type="text" 
+            fullWidth 
+            name="description" 
+            value={task.description} 
+            onChange={handleInputChange} 
+          />
 
         <Box mt = {1} > 
-          {task.due_date != null && (
-            <LocalizationProvider dateAdapter = {AdapterDayjs}>
+             <LocalizationProvider dateAdapter = {AdapterDayjs}>
                 <DateTimePicker
-                    label = 'Date & Time'
-                    value = {task.due_date}
-                    onChange = {handleDateChange}
-                    defaultValue={dayjs.tz('2024-03-28T12:10', 'Asia/colombo')}
-                    renderInput = {(params) => <TextField  {...params } fullWidth margin='dense'/>}
-                    />
-            </LocalizationProvider>
-            )}
+                   label = 'Date & Time'
+                    // value = {task.due_date}
+                     onChange = {handleDateChange}
+                     renderInput = {(params) => <TextField  {...params } fullWidth margin='dense'/>}
+                  />
+             </LocalizationProvider>
+
+            
+
+            
             </Box>
 
 
